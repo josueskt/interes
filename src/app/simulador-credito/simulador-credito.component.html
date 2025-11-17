@@ -1,0 +1,157 @@
+<div class="container">
+  <h1>Simulador de Crédito</h1>
+  
+  <!-- Formulario de entrada -->
+  <div class="formulario">
+    <h2>Datos del Crédito</h2>
+    
+    <div class="campo-grupo">
+      <label>Monto del Crédito (C):</label>
+      <input 
+        type="number" 
+        [(ngModel)]="montoCredito" 
+        placeholder="Ingrese el monto del crédito"
+        step="0.01"
+        min="0">
+    </div>
+
+    <div class="campo-grupo">
+      <label>Tasa de Interés Anual (%) (i):</label>
+      <input 
+        type="number" 
+        [(ngModel)]="tasaInteres" 
+        placeholder="Ingrese la tasa de interés anual"
+        step="0.01"
+        min="0">
+    </div>
+
+    <div class="campo-grupo">
+      <label>Tiempo en años (n):</label>
+      <input 
+        type="number" 
+        [(ngModel)]="tiempoAnios" 
+        placeholder="Ingrese el tiempo en años"
+        step="0.01"
+        min="0">
+    </div>
+
+    <div class="campo-grupo">
+      <label>Número de pagos por año (m):</label>
+      <input 
+        type="number" 
+        [(ngModel)]="pagosPorAnio" 
+        placeholder="Ej: 1=Anual, 2=Semestral, 4=Trimestral, 12=Mensual"
+        step="1"
+        min="1">
+      <small>1=Anual, 2=Semestral, 4=Trimestral, 12=Mensual</small>
+    </div>
+
+    <div class="campo-grupo tipo-tabla">
+      <label>Tipo de Tabla:</label>
+      <div class="radio-group">
+        <label class="radio-label">
+          <input type="radio" [(ngModel)]="tipoTabla" value="francesa">
+          Tabla Francesa (Cuotas constantes)
+        </label>
+        <label class="radio-label">
+          <input type="radio" [(ngModel)]="tipoTabla" value="alemana">
+          Tabla Alemana (Capital constante)
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botones -->
+  <div class="botones">
+    <button (click)="calcular()" class="btn-calcular">Calcular Cuotas</button>
+    <button (click)="limpiar()" class="btn-limpiar">Limpiar</button>
+  </div>
+
+  <!-- Mensajes -->
+  <div *ngIf="mensaje" class="mensaje" [ngClass]="{'error': esError}">
+    {{ mensaje }}
+  </div>
+
+  <!-- Resumen -->
+  <div *ngIf="mostrarResultado" class="resumen">
+    <h3>Resumen del Crédito</h3>
+    <div class="resumen-grid">
+      <div class="resumen-item">
+        <span class="label">Monto del Crédito:</span>
+        <span class="valor">{{ montoCredito | number:'1.2-2' }}</span>
+      </div>
+      <div class="resumen-item">
+        <span class="label">Tasa de Interés:</span>
+        <span class="valor">{{ tasaInteres }}% anual</span>
+      </div>
+      <div class="resumen-item">
+        <span class="label">Plazo:</span>
+        <span class="valor">{{ tiempoAnios }} años ({{ numeroCuotas }} cuotas)</span>
+      </div>
+      <div class="resumen-item">
+        <span class="label">Tipo de Tabla:</span>
+        <span class="valor">{{ tipoTabla === 'francesa' ? 'Francesa' : 'Alemana' }}</span>
+      </div>
+      <div class="resumen-item destacado">
+        <span class="label">Total a Pagar:</span>
+        <span class="valor">{{ totalPagar | number:'1.2-2' }}</span>
+      </div>
+      <div class="resumen-item destacado">
+        <span class="label">Total Intereses:</span>
+        <span class="valor">{{ totalIntereses | number:'1.2-2' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de amortización -->
+  <div *ngIf="mostrarResultado && cuotas.length > 0" class="tabla-container">
+    <h3>Tabla de Amortización</h3>
+    <div class="tabla-scroll">
+      <table class="tabla-amortizacion">
+        <thead>
+          <tr>
+            <th>Cuota Nº</th>
+            <th>Cuota Total</th>
+            <th>Capital</th>
+            <th>Intereses</th>
+            <th>Saldo Restante</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cuota of cuotas; let i = index" [class.ultima-fila]="i === cuotas.length - 1">
+            <td>{{ cuota.numero }}</td>
+            <td class="monto">{{ cuota.cuotaTotal | number:'1.2-2' }}</td>
+            <td class="monto">{{ cuota.capital | number:'1.2-2' }}</td>
+            <td class="monto">{{ cuota.intereses | number:'1.2-2' }}</td>
+            <td class="monto saldo">{{ cuota.saldo | number:'1.2-2' }}</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr class="total">
+            <td><strong>TOTAL</strong></td>
+            <td class="monto"><strong>{{ totalPagar | number:'1.2-2' }}</strong></td>
+            <td class="monto"><strong>{{ montoCredito | number:'1.2-2' }}</strong></td>
+            <td class="monto"><strong>{{ totalIntereses | number:'1.2-2' }}</strong></td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- Información adicional -->
+  <div *ngIf="mostrarResultado" class="info-adicional">
+    <h4>Información sobre el método de cálculo:</h4>
+    <div *ngIf="tipoTabla === 'francesa'" class="info-metodo">
+      <p><strong>Tabla Francesa (Sistema Francés):</strong></p>
+      <p>Las cuotas son <strong>constantes</strong> durante todo el período del crédito. Cada pago incluye capital más intereses, pero la proporción cambia con el tiempo: al inicio se pagan más intereses y menos capital, y hacia el final se paga más capital y menos intereses.</p>
+      <p>Fórmula de cuota: <code>Cuota = C × [i(1+i)^n] / [(1+i)^n - 1]</code></p>
+    </div>
+    <div *ngIf="tipoTabla === 'alemana'" class="info-metodo">
+      <p><strong>Tabla Alemana (Sistema Alemán):</strong></p>
+      <p>El capital amortizado es <strong>constante</strong> en cada cuota. Los intereses se calculan sobre el saldo restante, por lo que la cuota total disminuye con el tiempo. Al inicio las cuotas son más altas y van disminuyendo progresivamente.</p>
+      <p>Capital constante: <code>Capital = C / n</code></p>
+      <p>Intereses: <code>Intereses = Saldo × i</code></p>
+    </div>
+  </div>
+</div>

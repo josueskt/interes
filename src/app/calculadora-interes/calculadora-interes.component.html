@@ -1,0 +1,186 @@
+<div class="container">
+  <h1>Calculadora de Interés</h1>
+  
+  <!-- Selector de tipo de interés -->
+  <div class="tipo-interes">
+    <label for="tipoInteres">Tipo de Interés:</label>
+    <select id="tipoInteres" [(ngModel)]="tipoInteres" (change)="onTipoInteresChange()">
+      <option value="simple">Interés Simple</option>
+      <option value="compuesto">Interés Compuesto</option>
+    </select>
+  </div>
+
+  <!-- Formulario de Interés Simple -->
+  <div *ngIf="tipoInteres === 'simple'" class="formulario">
+    <h2>Interés Simple</h2>
+    <p class="formula-info">Fórmula: I = C × i × n | M = C + I = C(1 + i × n)</p>
+    
+    <div class="campo-grupo">
+      <label>
+        <input type="checkbox" [(ngModel)]="campos.C.esIncognita" (change)="onIncognitaChange('C')">
+        Capital (C):
+      </label>
+      <input 
+        type="number" 
+        [(ngModel)]="campos.C.valor" 
+        [disabled]="campos.C.esIncognita"
+        placeholder="Ingrese el capital inicial"
+        step="0.01">
+    </div>
+
+    <div class="campo-grupo">
+      <label>
+        <input type="checkbox" [(ngModel)]="campos.i.esIncognita" (change)="onIncognitaChange('i')">
+        Tasa de Interés Anual (%) (i):
+      </label>
+      <input 
+        type="number" 
+        [(ngModel)]="campos.i.valor" 
+        [disabled]="campos.i.esIncognita"
+        placeholder="Ingrese la tasa de interés"
+        step="0.01">
+    </div>
+
+    <div class="campo-grupo">
+      <label>
+        <input type="checkbox" [(ngModel)]="campos.n.esIncognita" (change)="onIncognitaChange('n')">
+        Tiempo en años (n):
+      </label>
+      <input 
+        type="number" 
+        [(ngModel)]="campos.n.valor" 
+        [disabled]="campos.n.esIncognita"
+        placeholder="Ingrese el tiempo en años"
+        step="0.01">
+    </div>
+
+    <div class="campo-grupo">
+      <label>
+        <input type="checkbox" [(ngModel)]="campos.I.esIncognita" (change)="onIncognitaChange('I')">
+        Interés (I):
+      </label>
+      <input 
+        type="number" 
+        [(ngModel)]="campos.I.valor" 
+        [disabled]="campos.I.esIncognita"
+        placeholder="Ingrese el interés generado"
+        step="0.01">
+    </div>
+
+    <div class="campo-grupo">
+      <label>
+        <input type="checkbox" [(ngModel)]="campos.M.esIncognita" (change)="onIncognitaChange('M')">
+        Monto Final (M):
+      </label>
+      <input 
+        type="number" 
+        [(ngModel)]="campos.M.valor" 
+        [disabled]="campos.M.esIncognita"
+        placeholder="Ingrese el monto final"
+        step="0.01">
+    </div>
+  </div>
+
+  <!-- Formulario de Interés Compuesto -->
+  <div *ngIf="tipoInteres === 'compuesto'" class="formulario">
+    <h2>Interés Compuesto</h2>
+    <p class="formula-info">Fórmula: M = C(1 + i/m)^(n×m) | I = M - C</p>
+    
+    <div class="campo-grupo">
+      <label>
+        <input type="checkbox" [(ngModel)]="campos.C.esIncognita" (change)="onIncognitaChange('C')">
+        Capital (C):
+      </label>
+      <input 
+        type="number" 
+        [(ngModel)]="campos.C.valor" 
+        [disabled]="campos.C.esIncognita"
+        placeholder="Ingrese el capital inicial"
+        step="0.01">
+    </div>
+
+    <div class="campo-grupo">
+      <label>
+        <input type="checkbox" [(ngModel)]="campos.i.esIncognita" (change)="onIncognitaChange('i')">
+        Tasa de Interés Anual (%) (i):
+      </label>
+      <input 
+        type="number" 
+        [(ngModel)]="campos.i.valor" 
+        [disabled]="campos.i.esIncognita"
+        placeholder="Ingrese la tasa de interés"
+        step="0.01">
+    </div>
+
+    <div class="campo-grupo">
+      <label>
+        <input type="checkbox" [(ngModel)]="campos.n.esIncognita" (change)="onIncognitaChange('n')">
+        Tiempo en años (n):
+      </label>
+      <input 
+        type="number" 
+        [(ngModel)]="campos.n.valor" 
+        [disabled]="campos.n.esIncognita"
+        placeholder="Ingrese el tiempo en años"
+        step="0.01">
+    </div>
+
+    <div class="campo-grupo">
+      <label>
+        Capitalización por año (m):
+      </label>
+      <input 
+        type="number" 
+        [(ngModel)]="campos.m.valor"
+        placeholder="Ej: 1=Anual, 2=Semestral, 4=Trimestral, 12=Mensual"
+        step="1"
+        min="1">
+    </div>
+
+    <div class="campo-grupo">
+      <label>
+        <input type="checkbox" [(ngModel)]="campos.M.esIncognita" (change)="onIncognitaChange('M')">
+        Monto Final (M):
+      </label>
+      <input 
+        type="number" 
+        [(ngModel)]="campos.M.valor" 
+        [disabled]="campos.M.esIncognita"
+        placeholder="Ingrese el monto final"
+        step="0.01">
+    </div>
+
+    <div class="campo-grupo">
+      <label>
+        <input type="checkbox" [(ngModel)]="campos.I.esIncognita" (change)="onIncognitaChange('I')">
+        Interés (I):
+      </label>
+      <input 
+        type="number" 
+        [(ngModel)]="campos.I.valor" 
+        [disabled]="campos.I.esIncognita"
+        placeholder="Ingrese el interés generado"
+        step="0.01">
+    </div>
+  </div>
+
+  <!-- Botones -->
+  <div class="botones">
+    <button (click)="calcular()" class="btn-calcular">Calcular</button>
+    <button (click)="limpiar()" class="btn-limpiar">Limpiar</button>
+  </div>
+
+  <!-- Mensajes -->
+  <div *ngIf="mensaje" class="mensaje" [ngClass]="{'error': esError, 'exito': !esError}">
+    {{ mensaje }}
+  </div>
+
+  <!-- Resultado -->
+  <div *ngIf="mostrarResultado && resultado !== null" class="resultado">
+    <h3>Resultado:</h3>
+    <p><strong>{{ incognitaSeleccionada }} = {{ resultado | number:'1.2-2' }}</strong></p>
+    <div class="detalle-calculo" *ngIf="detalleCalculo">
+      <p>{{ detalleCalculo }}</p>
+    </div>
+  </div>
+</div>
