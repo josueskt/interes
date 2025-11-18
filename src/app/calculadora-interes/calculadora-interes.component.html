@@ -164,6 +164,14 @@
     </div>
   </div>
 
+  <!-- Fórmula a utilizar -->
+  <div *ngIf="incognitaSeleccionada && formulaAUtilizar" class="formula-mostrar">
+    <h3>Fórmula a utilizar:</h3>
+    <div class="formula-box">
+      <code>{{ formulaAUtilizar }}</code>
+    </div>
+  </div>
+
   <!-- Botones -->
   <div class="botones">
     <button (click)="calcular()" class="btn-calcular">Calcular</button>
