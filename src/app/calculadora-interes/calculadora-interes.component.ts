@@ -34,6 +34,7 @@ export class CalculadoraInteresComponent {
   };
 
   incognitaSeleccionada: string | null = 'I';
+  formulaAUtilizar: string = 'I = C × i × n';
   resultado: number | null = null;
   mostrarResultado: boolean = false;
   mensaje: string = '';
@@ -57,6 +58,7 @@ export class CalculadoraInteresComponent {
       this.campos.M.esIncognita = true;
       this.incognitaSeleccionada = 'M';
     }
+    this.actualizarFormula();
   }
 
   onIncognitaChange(campo: string): void {
@@ -68,11 +70,56 @@ export class CalculadoraInteresComponent {
         }
       });
       this.incognitaSeleccionada = campo;
+      this.actualizarFormula();
     } else {
       this.incognitaSeleccionada = null;
+      this.formulaAUtilizar = '';
     }
     this.mostrarResultado = false;
     this.mensaje = '';
+  }
+
+  actualizarFormula(): void {
+    if (!this.incognitaSeleccionada) return;
+
+    if (this.tipoInteres === 'simple') {
+      switch (this.incognitaSeleccionada) {
+        case 'C':
+          this.formulaAUtilizar = 'C = I / (i × n)  o  C = M / (1 + i × n)';
+          break;
+        case 'i':
+          this.formulaAUtilizar = 'i = I / (C × n)  o  i = (M/C - 1) / n';
+          break;
+        case 'n':
+          this.formulaAUtilizar = 'n = I / (C × i)  o  n = (M/C - 1) / i';
+          break;
+        case 'I':
+          this.formulaAUtilizar = 'I = C × i × n';
+          break;
+        case 'M':
+          this.formulaAUtilizar = 'M = C × (1 + i × n)';
+          break;
+      }
+    } else {
+      // Interés compuesto
+      switch (this.incognitaSeleccionada) {
+        case 'C':
+          this.formulaAUtilizar = 'C = M / (1 + i/m)^(n×m)';
+          break;
+        case 'i':
+          this.formulaAUtilizar = 'i = m × ((M/C)^(1/(n×m)) - 1)';
+          break;
+        case 'n':
+          this.formulaAUtilizar = 'n = ln(M/C) / (m × ln(1 + i/m))';
+          break;
+        case 'M':
+          this.formulaAUtilizar = 'M = C × (1 + i/m)^(n×m)';
+          break;
+        case 'I':
+          this.formulaAUtilizar = 'I = M - C,  donde  M = C × (1 + i/m)^(n×m)';
+          break;
+      }
+    }
   }
 
   validarEntradas(): boolean {
@@ -278,6 +325,7 @@ export class CalculadoraInteresComponent {
       I: { valor: null, esIncognita: false }
     };
     this.incognitaSeleccionada = null;
+    this.formulaAUtilizar = '';
     this.resultado = null;
     this.mostrarResultado = false;
     this.mensaje = '';
